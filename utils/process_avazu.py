@@ -11,6 +11,6 @@ import pandas as pd
 n_rows = 4577464
 skip = np.delete(np.arange(n_rows), np.arange(0, n_rows, 1144))
 
-csv = pd.read_csv("../data/avazu/test.csv", skiprows = skip)[:-2]
+csv = pd.read_csv("../data/avazu/test.csv", skiprows = skip)[:-4]
 csv.to_csv("../data/avazu/avazu_sample.csv")
 
