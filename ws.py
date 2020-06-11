@@ -2,7 +2,6 @@
 """
 @author: Carlos
 """
-
 import time
 
 import pandas as pd
@@ -10,14 +9,10 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
-# GLOBAL VARIABLES
-
 # To read, pre-process and split datasets
 PROCESS = False
-
 # Proportion of the test subset
 TEST_PROPORTION = 0.5
-
 
 def process_criteo():
     
@@ -49,9 +44,9 @@ def process_criteo():
         train_criteo, test_criteo = split_dataset(data_criteo, "criteo")
     else:
         print("Reading processed criteo data...")
-        data_criteo = pd.read_csv('./data/criteo/criteo_sample_processed.csv')
-        train_criteo = pd.read_csv("./data/criteo/train_{size}_criteo.csv".format(size = TEST_PROPORTION))
-        test_criteo = pd.read_csv("./data/criteo/test_{size}_criteo.csv".format(size = TEST_PROPORTION))
+        data_criteo = pd.read_csv('./data/criteo/criteo_sample_processed.csv').iloc[:, 1:]
+        train_criteo = pd.read_csv("./data/criteo/train_{size}_criteo.csv".format(size = TEST_PROPORTION)).iloc[:, 1:]
+        test_criteo = pd.read_csv("./data/criteo/test_{size}_criteo.csv".format(size = TEST_PROPORTION)).iloc[:, 1:]
         
     
     return data_criteo, train_criteo, test_criteo
@@ -85,18 +80,14 @@ def process_avazu():
         train_avazu, test_avazu = split_dataset(data_avazu, "avazu")
     else:
         print("Reading processed avazu data...")
-        data_avazu = pd.read_csv('./data/avazu/avazu_sample_processed.csv')
-        train_avazu = pd.read_csv("./data/avazu/train_{size}_avazu.csv".format(size = TEST_PROPORTION))
-        test_avazu = pd.read_csv("./data/avazu/test_{size}_avazu.csv".format(size = TEST_PROPORTION))
+        data_avazu = pd.read_csv('./data/avazu/avazu_sample_processed.csv').iloc[:, 1:]
+        train_avazu = pd.read_csv("./data/avazu/train_{size}_avazu.csv".format(size = TEST_PROPORTION)).iloc[:, 1:]
+        test_avazu = pd.read_csv("./data/avazu/test_{size}_avazu.csv".format(size = TEST_PROPORTION)).iloc[:, 1:]
         
         
     return data_avazu, train_avazu, test_avazu
 
-"""
-    dataset: dataset to split into train and test subsets
-    dataset_name: dataset name
-    test_proportion: proportion of the test subset. default is 20% of the size of the set
-"""
+
 def split_dataset(dataset, dataset_name):
     print("Creating train and test subsets on {name} data...\n".format(name = dataset_name))
     
@@ -106,6 +97,16 @@ def split_dataset(dataset, dataset_name):
     test.to_csv("./data/{name}/test_{size}_{name}.csv".format(name = dataset_name, size = TEST_PROPORTION))
         
     return train, test
+
+
+def test_PNN_criteo():
+    pass
+
+def test_FNN():
+    pass
+
+def test_DFM():
+    pass
     
     
 if __name__ == "__main__":
@@ -114,5 +115,6 @@ if __name__ == "__main__":
     
     data_criteo, train_criteo, test_criteo = process_criteo()
     data_avazu, train_avazu, test_avazu = process_avazu()
+    
         
     print("Program ended in {time} seconds.".format(time = round(time.time() - start_time, 2)))
