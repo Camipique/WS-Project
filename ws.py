@@ -9,6 +9,11 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
+from deepctr.models import PNN
+from deepctr.inputs import  SparseFeat, DenseFeat, get_feature_names
+
+from metrics import compute_auc, compute_log_loss, compute_rmse
+
 # To read, pre-process and split datasets
 PROCESS = False
 # Proportion of the test subset
@@ -98,15 +103,92 @@ def split_dataset(dataset, dataset_name):
         
     return train, test
 
+def test_PNN_criteo(data, train, test):    
+    """
+    TODO:
+        - dnn activation functions [relu, tahn] - dnn_activation - CHECK
+        - dropout rate [1, 0.9, 0.8, 0.7, 0.6, 0.5] - dnn_dropout - CHECK
+        - number of neurons in each layer [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)] - dnn_hidden_units - CHECK
+        - SEE how inner and outer product works to test here - DOING
+        - How can we plot the results??
+    """
+    print("\nTesting PNN on criteo dataset...\n")
+    
+    
+    dnn_activation_list = ["relu", "tanh", "sigmoid"]
+    dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5]
+    dnn_hidden_units_list = [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)]
+    
+    features_labels = train.columns
+        
+    sparse_features_labels = features_labels[14:]
+    dense_features_labels = features_labels[1:14]
+    target_label = features_labels[0]
+    
+    dnn_feature_columns = [SparseFeat(feat, vocabulary_size=data[feat].nunique(),embedding_dim=4,) for feat in sparse_features_labels] + [DenseFeat(feat, 1,) for feat in dense_features_labels]
+    
+    feature_names = get_feature_names(dnn_feature_columns)
+    
+    train_model_input = {name:train[name] for name in feature_names}
+    test_model_input = {name:test[name] for name in feature_names}
+    
+    true_y = test[target_label].values
+    
+    print("\t\t-- ACTIVATION FUNCTIONS --\t\t")
+    for dnn_activation in dnn_activation_list:
+        print("\nTesting {dnn_activation}...".format(dnn_activation = dnn_activation))
+        
+        model = PNN(dnn_feature_columns, dnn_activation = dnn_activation, task='binary')
+        model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
+        model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
+        pred_y = model.predict(test_model_input, batch_size=256)
+        
+        print("LogLoss", compute_log_loss(true_y, pred_y))
+        print("AUC", compute_auc(true_y, pred_y))
+        print("RMSE", compute_rmse(true_y, pred_y))
+        
+    print("\t\t-- DROPOUT RATES --\t\t")
+    for dnn_dropout in dnn_dropout_list:
+        print("\nTesting {dnn_dropout}...".format(dnn_dropout = dnn_dropout))
+        
+        model = PNN(dnn_feature_columns, dnn_dropout = dnn_dropout, task='binary')
+        model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
+        model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
+        pred_y = model.predict(test_model_input, batch_size=256)
+        
+        print("LogLoss", compute_log_loss(true_y, pred_y))
+        print("AUC", compute_auc(true_y, pred_y))
+        print("RMSE", compute_rmse(true_y, pred_y))
+        
+    print("\t\t-- HIDDEN UNITS --\t\t")
+    for dnn_hidden_units in dnn_hidden_units_list:
+        print("\nTesting {dnn_hidden_units}...".format(dnn_hidden_units = dnn_hidden_units))
+        
+        model = PNN(dnn_feature_columns, dnn_hidden_units = dnn_hidden_units, task='binary')
+        model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
+        model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
+        pred_y = model.predict(test_model_input, batch_size=256)
+        
+        print("LogLoss", compute_log_loss(true_y, pred_y))
+        print("AUC", compute_auc(true_y, pred_y))
+        print("RMSE", compute_rmse(true_y, pred_y))
+        
+    
 
-def test_PNN_criteo():
+def test_FNN_criteo():
     pass
 
-def test_FNN():
+def test_DFM_criteo():
     pass
 
-def test_DFM():
-    pass
+# def test_FNN_avazu():
+#     pass
+
+# def test_FNN_avazu():
+#     pass
+
+# def test_DFM_avazu():
+#     pass
     
     
 if __name__ == "__main__":
@@ -116,5 +198,6 @@ if __name__ == "__main__":
     data_criteo, train_criteo, test_criteo = process_criteo()
     data_avazu, train_avazu, test_avazu = process_avazu()
     
+    # test_PNN_criteo(data_criteo, train_criteo, test_criteo)
         
     print("Program ended in {time} seconds.".format(time = round(time.time() - start_time, 2)))
