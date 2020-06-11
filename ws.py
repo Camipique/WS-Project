@@ -5,6 +5,7 @@
 import time
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
@@ -16,10 +17,20 @@ from deepctr.inputs import  SparseFeat, DenseFeat, get_feature_names
 
 from metrics import compute_auc, compute_log_loss, compute_rmse
 
+
 # To read, pre-process and split datasets
 PROCESS = False
 # Proportion of the test subset
-TEST_PROPORTION = 0.5
+TEST_PROPORTION =  0.2
+
+results_number_of_neurons_fnn=[]
+results_dropout_fnn=[]
+results_activation_function_fnn=[]
+
+results_number_of_neurons_fnn_avazu=[]
+results_dropout_fnn_avazu=[]
+results_activation_function_fnn_avazu=[]
+
 
 def process_criteo():
     
@@ -62,7 +73,9 @@ def process_avazu():
     if PROCESS:
         print("Reading avazu data...")
         
+       # data_avazu = pd.read_csv('./data/avazu_2/train.csv')
         data_avazu = pd.read_csv('./data/avazu/avazu_sample.csv')
+
         
         print("Processing avazu data...")
         # Dropping "hour" column since the value is always the same
@@ -90,8 +103,7 @@ def process_avazu():
         data_avazu = pd.read_csv('./data/avazu/avazu_sample_processed.csv').iloc[:, 1:]
         train_avazu = pd.read_csv("./data/avazu/train_{size}_avazu.csv".format(size = TEST_PROPORTION)).iloc[:, 1:]
         test_avazu = pd.read_csv("./data/avazu/test_{size}_avazu.csv".format(size = TEST_PROPORTION)).iloc[:, 1:]
-        
-        
+ 
     return data_avazu, train_avazu, test_avazu
 
 
@@ -115,8 +127,7 @@ def test_PNN_criteo(data, train, test):
         - How can we plot the results??
     """
     print("\nTesting PNN on criteo dataset...\n")
-    
-    
+ 
     dnn_activation_list = ["relu", "tanh", "sigmoid"]
     dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5]
     dnn_hidden_units_list = [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)]
@@ -160,7 +171,7 @@ def test_PNN_criteo(data, train, test):
         
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
-        print("RMSE", compute_rmse(true_y, pred_y))
+        print("RMSE", compute_rmse(true_y, pred_y)) 
         
     print("\t\t-- HIDDEN UNITS --\t\t")
     for dnn_hidden_units in dnn_hidden_units_list:
@@ -168,16 +179,16 @@ def test_PNN_criteo(data, train, test):
         
         model = PNN(dnn_feature_columns, dnn_hidden_units = dnn_hidden_units, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
-        model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
+        model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0,validation_split=TEST_PROPORTION )
         pred_y = model.predict(test_model_input, batch_size=256)
         
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
         
-    
 
 def test_FNN_criteo(data,train,test):
+    
     """
     TODO:
         - dnn activation functions [relu, tahn] - dnn_activation - CHECK
@@ -188,11 +199,10 @@ def test_FNN_criteo(data,train,test):
     """
     print("\nTesting FNN on criteo dataset...\n")
     
-    
     dnn_activation_list = ["relu", "tanh", "sigmoid"]
     dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5]
     dnn_hidden_units_list = [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)]
-    
+
     features_labels = train.columns
         
     sparse_features_labels = features_labels[14:]
@@ -221,6 +231,11 @@ def test_FNN_criteo(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
+        results_activation_function_fnn.append(compute_auc(true_y,pred_y))
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_activation_list, results_activation_function_fnn)
+    ax.figure.savefig("activation_fnn.jpg")
         
     print("\t\t-- DROPOUT RATES --\t\t")
     for dnn_dropout in dnn_dropout_list:
@@ -234,6 +249,12 @@ def test_FNN_criteo(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
+        results_dropout_fnn.append(compute_auc(true_y,pred_y))
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_dropout_list, results_dropout_fnn)
+    ax.figure.savefig("dropout_fnn.jpg")
+    print(results_dropout_fnn)
         
     print("\t\t-- HIDDEN UNITS --\t\t")
     for dnn_hidden_units in dnn_hidden_units_list:
@@ -247,8 +268,15 @@ def test_FNN_criteo(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        
-    
+        results_number_of_neurons_fnn.append(compute_auc(true_y,pred_y))
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_hidden_units_list, results_number_of_neurons_fnn)
+    ax.figure.savefig("number_of_neurons_criteo.jpg")
+
+         
+
+
 
 def test_DFM_criteo():
     pass
@@ -271,6 +299,7 @@ def test_FNN_avazu(data,train,test):
     dnn_activation_list = ["relu", "tanh", "sigmoid"]
     dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5]
     dnn_hidden_units_list = [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)]
+
     
     features_labels = train.columns
         
@@ -299,6 +328,12 @@ def test_FNN_avazu(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
+        results_activation_function_fnn_avazu.append(compute_auc(true_y,pred_y))
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_activation_list, results_activation_function_fnn_avazu)
+    ax.figure.savefig("activation_fnn_avazu.jpg")
+        
         
     print("\t\t-- DROPOUT RATES --\t\t")
     for dnn_dropout in dnn_dropout_list:
@@ -312,6 +347,12 @@ def test_FNN_avazu(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
+        results_dropout_fnn_avazu.append(compute_auc(true_y,pred_y))
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_dropout_list, results_dropout_fnn_avazu)
+    ax.figure.savefig("dropout_avazu.jpg")
+    print(results_dropout_fnn_avazu)
         
     print("\t\t-- HIDDEN UNITS --\t\t")
     for dnn_hidden_units in dnn_hidden_units_list:
@@ -325,6 +366,12 @@ def test_FNN_avazu(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
+        results_number_of_neurons_fnn_avazu.append(compute_auc(true_y, pred_y))
+        
+    fig,ax=plt.subplots()
+    ax.plot(dnn_hidden_units_list, results_number_of_neurons_fnn_avazu)
+    ax.figure.savefig("number_of_neurons_avazu.jpg")
+  
         
     
 
