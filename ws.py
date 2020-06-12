@@ -22,15 +22,19 @@ from metrics import compute_auc, compute_log_loss, compute_rmse
 PROCESS = False
 # Proportion of the test subset
 TEST_PROPORTION =  0.2
+PLOT=True
 
-results_number_of_neurons_fnn=[]
-results_dropout_fnn=[]
-results_activation_function_fnn=[]
+results_number_of_neurons_auc=[]
+results_dropout_auc=[]
+results_activation_function_auc=[]
 
-results_number_of_neurons_fnn_avazu=[]
-results_dropout_fnn_avazu=[]
-results_activation_function_fnn_avazu=[]
+results_number_of_neurons_loc=[]
+results_dropout_loc=[]
+results_activation_function_loc=[]
 
+results_number_of_neurons_rmse=[]
+results_dropout_rmse=[]
+results_activation_function_rmse=[]
 
 def process_criteo():
     
@@ -231,11 +235,10 @@ def test_FNN_criteo(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        results_activation_function_fnn.append(compute_auc(true_y,pred_y))
-
-    fig,ax=plt.subplots()
-    ax.plot(dnn_activation_list, results_activation_function_fnn)
-    ax.figure.savefig("activation_fnn.jpg")
+        if PLOT:
+            results_activation_function_auc.append(compute_auc(true_y,pred_y))
+            results_activation_function_loc.append(compute_log_loss(true_y,pred_y))
+            results_activation_function_rmse.append(compute_rmse(true_y,pred_y))
         
     print("\t\t-- DROPOUT RATES --\t\t")
     for dnn_dropout in dnn_dropout_list:
@@ -249,12 +252,11 @@ def test_FNN_criteo(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        results_dropout_fnn.append(compute_auc(true_y,pred_y))
+        if PLOT:
+            results_dropout_auc.append(compute_auc(true_y,pred_y))
+            results_dropout_loc.append(compute_log_loss(true_y,pred_y))
+            results_dropout_rmse.append(compute_rmse(true_y,pred_y))
 
-    fig,ax=plt.subplots()
-    ax.plot(dnn_dropout_list, results_dropout_fnn)
-    ax.figure.savefig("dropout_fnn.jpg")
-    print(results_dropout_fnn)
         
     print("\t\t-- HIDDEN UNITS --\t\t")
     for dnn_hidden_units in dnn_hidden_units_list:
@@ -268,11 +270,11 @@ def test_FNN_criteo(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        results_number_of_neurons_fnn.append(compute_auc(true_y,pred_y))
-
-    fig,ax=plt.subplots()
-    ax.plot(dnn_hidden_units_list, results_number_of_neurons_fnn)
-    ax.figure.savefig("number_of_neurons_criteo.jpg")
+        
+        if PLOT:
+            results_number_of_neurons_auc.append(compute_auc(true_y, pred_y))
+            results_number_of_neurons_loc.append(compute_log_loss(true_y, pred_y))
+            results_number_of_neurons_rmse.append(compute_rmse(true_y, pred_y))
 
          
 
@@ -285,16 +287,8 @@ def test_DFM_criteo():
 #     pass
 
 def test_FNN_avazu(data,train,test):
-    """
-    TODO:
-        - dnn activation functions [relu, tahn] - dnn_activation - CHECK
-        - dropout rate [1, 0.9, 0.8, 0.7, 0.6, 0.5] - dnn_dropout - CHECK
-        - number of neurons in each layer [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)] - dnn_hidden_units - CHECK
-        - SEE how inner and outer product works to test here - DOING
-        - How can we plot the results??
-    """
-    print("\nTesting FNN on avazu dataset...\n")
     
+    print("\nTesting FNN on avazu dataset...\n")
     
     dnn_activation_list = ["relu", "tanh", "sigmoid"]
     dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5]
@@ -328,12 +322,11 @@ def test_FNN_avazu(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        results_activation_function_fnn_avazu.append(compute_auc(true_y,pred_y))
+        if PLOT:
+            results_activation_function_auc.append(compute_auc(true_y,pred_y))
+            results_activation_function_loc.append(compute_log_loss(true_y,pred_y))
+            results_activation_function_rmse.append(compute_rmse(true_y,pred_y))
 
-    fig,ax=plt.subplots()
-    ax.plot(dnn_activation_list, results_activation_function_fnn_avazu)
-    ax.figure.savefig("activation_fnn_avazu.jpg")
-        
         
     print("\t\t-- DROPOUT RATES --\t\t")
     for dnn_dropout in dnn_dropout_list:
@@ -347,13 +340,11 @@ def test_FNN_avazu(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        results_dropout_fnn_avazu.append(compute_auc(true_y,pred_y))
+        if PLOT:
+            results_dropout_auc.append(compute_auc(true_y,pred_y))
+            results_dropout_loc.append(compute_log_loss(true_y,pred_y))
+            results_dropout_rmse.append(compute_rmse(true_y,pred_y))
 
-    fig,ax=plt.subplots()
-    ax.plot(dnn_dropout_list, results_dropout_fnn_avazu)
-    ax.figure.savefig("dropout_avazu.jpg")
-    print(results_dropout_fnn_avazu)
-        
     print("\t\t-- HIDDEN UNITS --\t\t")
     for dnn_hidden_units in dnn_hidden_units_list:
         print("\nTesting {dnn_hidden_units}...".format(dnn_hidden_units = dnn_hidden_units))
@@ -366,31 +357,73 @@ def test_FNN_avazu(data,train,test):
         print("LogLoss", compute_log_loss(true_y, pred_y))
         print("AUC", compute_auc(true_y, pred_y))
         print("RMSE", compute_rmse(true_y, pred_y))
-        results_number_of_neurons_fnn_avazu.append(compute_auc(true_y, pred_y))
         
-    fig,ax=plt.subplots()
-    ax.plot(dnn_hidden_units_list, results_number_of_neurons_fnn_avazu)
-    ax.figure.savefig("number_of_neurons_avazu.jpg")
-  
-        
-    
+        if PLOT:
+            results_number_of_neurons_auc.append(compute_auc(true_y, pred_y))
+            results_number_of_neurons_loc.append(compute_log_loss(true_y, pred_y))
+            results_number_of_neurons_rmse.append(compute_rmse(true_y, pred_y))
 
 
 # def test_DFM_avazu():
 #     pass
+
+def create_plots(name_method): 
+    dnn_activation_list = ["relu", "tanh", "sigmoid"]
+    dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5]
+    dnn_hidden_units_list = [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)]
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_activation_list, results_activation_function_auc, marker="s")
+    ax.plot(dnn_activation_list, results_activation_function_loc,marker="s")
+    ax.plot(dnn_activation_list, results_activation_function_rmse,marker="s")
+    fig.legend(["auc", "logLoss","rmse",])
+    ax.figure.savefig("activation_func_{name}.jpg".format(name = name_method))
+   
+    fig,ax=plt.subplots()
+    ax.plot(dnn_dropout_list, results_dropout_auc, marker="s")
+    ax.plot(dnn_dropout_list, results_dropout_loc,marker="s")
+    ax.plot(dnn_dropout_list, results_dropout_rmse,marker="s")
+    fig.legend(["auc", "logLoss","rmse",])
+    ax.figure.savefig("dropout_{name}.jpg".format(name = name_method))
+
+    fig,ax=plt.subplots()
+    ax.plot(dnn_hidden_units_list, results_number_of_neurons_auc, marker="s")
+    ax.plot(dnn_hidden_units_list, results_number_of_neurons_loc,marker="s")
+    ax.plot(dnn_hidden_units_list, results_number_of_neurons_rmse,marker="s")
+    fig.legend(["auc", "logLoss","rmse",])
+    ax.figure.savefig("number_of_neurons_{name}.jpg".format(name = name_method))
+
+    results_number_of_neurons_auc.clear()
+    results_dropout_auc.clear()
+    results_activation_function_auc.clear()
+
+    results_number_of_neurons_loc.clear()   
+    results_dropout_loc.clear()
+    results_activation_function_loc.clear()
+
+    results_number_of_neurons_rmse.clear()
+    results_dropout_rmse.clear()
+    results_activation_function_rmse.clear()
+
     
     
 if __name__ == "__main__":
     
     start_time = time.time()
-    
+
     data_criteo, train_criteo, test_criteo = process_criteo()
     data_avazu, train_avazu, test_avazu = process_avazu()
 
     #test_PNN_criteo(data_criteo, train_criteo, test_criteo)
     
     test_FNN_criteo(data_criteo,train_criteo,test_criteo)
+    if PLOT:
+        create_plots("fnn_criteo")
+
     test_FNN_avazu(data_avazu,train_avazu,test_avazu)
+    if PLOT:
+        create_plots("fnn_avazu")
+
 
         
     print("Program ended in {time} seconds.".format(time = round(time.time() - start_time, 2)))
