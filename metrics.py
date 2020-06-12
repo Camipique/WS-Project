@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-@author: Carlos
-
-
+@author: Carlos Quendera 49946
+@author: David Pais 50220
+@author: Rebekka Gorge N º 59055
+            
 Metrics: 
     - AUC
     - Log Loss

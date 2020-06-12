@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-@author: Carlos
+@author: Carlos Quendera 49946
+@author: David Pais 50220
+@author: Rebekka Gorge N º 59055
+            
 """
 import time
 
@@ -225,7 +228,8 @@ def test_FNN_criteo(data,train,test):
     test_model_input = {name:test[name] for name in feature_names}
     
     true_y = test[target_label].values
-    
+   
+       
     print("\t\t-- ACTIVATION FUNCTIONS --\t\t")
     for dnn_activation in dnn_activation_list:
         print("\nTesting {dnn_activation}...".format(dnn_activation = dnn_activation))
@@ -260,7 +264,8 @@ def test_FNN_criteo(data,train,test):
         results_dropout["logloss"].append(logloss)
         results_dropout["rmse"].append(rmse)
 
-        
+   
+
     print("\t\t-- HIDDEN UNITS --\t\t")
     for dnn_hidden_units in dnn_hidden_units_list:
         print("\nTesting {dnn_hidden_units}...".format(dnn_hidden_units = dnn_hidden_units))
@@ -282,6 +287,8 @@ def test_FNN_criteo(data,train,test):
         create_plots("FNN", "criteo", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
         create_plots("FNN", "criteo", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
         create_plots("FNN", "criteo", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
+
+
 
 def test_DFM_criteo(data,train,test):
     print("\nTesting DFM on criteo dataset...\n")
@@ -627,10 +634,13 @@ def test_DFM_avazu(data,train,test):
 def create_plots(algorithm, dataset_name, results, title, filename, x): 
 
     fig, ax = plt.subplots()
-    ax.plot(x, results["auc"], marker = "s", color = "r")
-    ax.plot(x, results["logloss"], marker = "s", color = "g")
-    ax.plot(x, results["rmse"], marker = "s", color = "b")
-    fig.legend(["AUC", "LogLoss", "RMSE"])
+    ax.plot(x, results["auc"], marker = "s", color = "r", label = "AUC")
+    ax.plot(x, results["logloss"], marker = "s", color = "g", label = "LogLoss")
+    ax.plot(x, results["rmse"], marker = "s", color = "b", label = "RMSE")
+    ax.legend()
+    handles, labels = ax.get_legend_handles_labels()
+    lgd = dict(zip(labels, handles))
+    ax.legend(lgd.values(), lgd.keys())
     fig.suptitle(title)
     ax.figure.savefig("./plots/{dataset_name}/{algorithm}/{filename}_{algorithm}.jpg".format(algorithm = algorithm, dataset_name = dataset_name, filename = filename))
     
@@ -645,10 +655,10 @@ if __name__ == "__main__":
     test_FNN_criteo(data_criteo,train_criteo,test_criteo)
     test_FNN_avazu(data_avazu,train_avazu,test_avazu)
     
-    # test_PNN_criteo(data_criteo, train_criteo, test_criteo)
-    # test_PNN_avazu(data_avazu,train_avazu,test_avazu)
+    test_PNN_criteo(data_criteo, train_criteo, test_criteo)
+    test_PNN_avazu(data_avazu,train_avazu,test_avazu)
     
-    # test_DFM_criteo(data_criteo, train_criteo, test_criteo)
-    # test_DFM_avazu(data_avazu,train_avazu,test_avazu)
+    test_DFM_criteo(data_criteo, train_criteo, test_criteo)
+    test_DFM_avazu(data_avazu,train_avazu,test_avazu)
         
     print("Program ended in {time} seconds.".format(time = round(time.time() - start_time, 2)))
