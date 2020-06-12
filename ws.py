@@ -23,10 +23,6 @@ dnn_activation_list = ["relu", "tanh", "sigmoid"]
 dnn_dropout_list = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
 dnn_hidden_units_list = [(100, 100), (200, 200), (300, 300), (400, 400), (500, 500), (600, 600), (700, 700), (800, 800)]
 
-# dnn_activation_list = ["relu", "tanh"]
-# dnn_dropout_list = [0.2, 0.1]
-# dnn_hidden_units_list = [(128, 128), (200, 200)]
-
 def process_criteo():
     
     if PROCESS:
@@ -143,7 +139,8 @@ def test_PNN_criteo(data, train, test):
     for dnn_activation in dnn_activation_list:
         print("\nTesting {dnn_activation}...".format(dnn_activation = dnn_activation))
         
-        model = PNN(dnn_feature_columns, dnn_activation = dnn_activation, task='binary')
+        # model = PNN(dnn_feature_columns, use_inner=False, use_outter=True, dnn_activation = dnn_activation, task='binary')
+        model = PNN(dnn_feature_columns, use_inner=True, use_outter=False, dnn_activation = dnn_activation, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
         model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
         pred_y = model.predict(test_model_input, batch_size=256)
@@ -160,7 +157,8 @@ def test_PNN_criteo(data, train, test):
     for dnn_dropout in dnn_dropout_list:
         print("\nTesting {dnn_dropout}...".format(dnn_dropout = dnn_dropout))
         
-        model = PNN(dnn_feature_columns, dnn_dropout = dnn_dropout, task='binary')
+        # model = PNN(dnn_feature_columns, use_inner=False, use_outter=True, dnn_dropout = dnn_dropout, task='binary')
+        model = PNN(dnn_feature_columns, use_inner=True, use_outter=False, dnn_dropout = dnn_dropout, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
         model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
         pred_y = model.predict(test_model_input, batch_size=256)
@@ -177,7 +175,8 @@ def test_PNN_criteo(data, train, test):
     for dnn_hidden_units in dnn_hidden_units_list:
         print("\nTesting {dnn_hidden_units}...".format(dnn_hidden_units = dnn_hidden_units))
         
-        model = PNN(dnn_feature_columns, dnn_hidden_units = dnn_hidden_units, task='binary')
+        # model = PNN(dnn_feature_columns, use_inner=False, use_outter=True, dnn_hidden_units = dnn_hidden_units, task='binary')
+        model = PNN(dnn_feature_columns, use_inner=True, use_outter=False, dnn_hidden_units = dnn_hidden_units, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
         model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0,validation_split=TEST_PROPORTION )
         pred_y = model.predict(test_model_input, batch_size=256)
@@ -191,6 +190,9 @@ def test_PNN_criteo(data, train, test):
         results_number_of_neurons["rmse"].append(rmse)
         
     if PLOT:
+        # create_plots("OPNN", "criteo", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
+        # create_plots("OPNN", "criteo", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
+        # create_plots("OPNN", "criteo", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
         create_plots("PNN", "criteo", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
         create_plots("PNN", "criteo", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
         create_plots("PNN", "criteo", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
@@ -395,7 +397,8 @@ def test_PNN_avazu(data,train,test):
     for dnn_activation in dnn_activation_list:
         print("\nTesting {dnn_activation}...".format(dnn_activation = dnn_activation))
         
-        model = PNN(dnn_feature_columns, dnn_activation = dnn_activation, task='binary')
+        # model = PNN(dnn_feature_columns, use_inner=False, use_outter=True, dnn_activation = dnn_activation, task='binary')
+        model = PNN(dnn_feature_columns, use_inner=True, use_outter=False, dnn_activation = dnn_activation, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
         model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
         pred_y = model.predict(test_model_input, batch_size=256)
@@ -412,7 +415,8 @@ def test_PNN_avazu(data,train,test):
     for dnn_dropout in dnn_dropout_list:
         print("\nTesting {dnn_dropout}...".format(dnn_dropout = dnn_dropout))
         
-        model = PNN(dnn_feature_columns, dnn_dropout = dnn_dropout, task='binary')
+        # model = PNN(dnn_feature_columns, use_inner=False, use_outter=True, dnn_dropout = dnn_dropout, task='binary')
+        model = PNN(dnn_feature_columns, use_inner=True, use_outter=False, dnn_dropout = dnn_dropout, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
         model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0, validation_split=TEST_PROPORTION, )
         pred_y = model.predict(test_model_input, batch_size=256)
@@ -429,7 +433,8 @@ def test_PNN_avazu(data,train,test):
     for dnn_hidden_units in dnn_hidden_units_list:
         print("\nTesting {dnn_hidden_units}...".format(dnn_hidden_units = dnn_hidden_units))
         
-        model = PNN(dnn_feature_columns, dnn_hidden_units = dnn_hidden_units, task='binary')
+        # model = PNN(dnn_feature_columns, use_inner=False, use_outter=True, dnn_hidden_units = dnn_hidden_units, task='binary')
+        model = PNN(dnn_feature_columns, use_inner=True, use_outter=False, dnn_hidden_units = dnn_hidden_units, task='binary')
         model.compile("adam", "binary_crossentropy", metrics=['binary_crossentropy'], )
         model.fit(train_model_input, train[target_label].values, batch_size=256, epochs=10, verbose=0,validation_split=TEST_PROPORTION )
         pred_y = model.predict(test_model_input, batch_size=256)
@@ -443,6 +448,9 @@ def test_PNN_avazu(data,train,test):
         results_number_of_neurons["rmse"].append(rmse)
         
     if PLOT:
+        # create_plots("OPNN", "avazu", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
+        # create_plots("OPNN", "avazu", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
+        # create_plots("OPNN", "avazu", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
         create_plots("PNN", "avazu", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
         create_plots("PNN", "avazu", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
         create_plots("PNN", "avazu", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
@@ -527,9 +535,9 @@ def test_FNN_avazu(data,train,test):
         results_number_of_neurons["rmse"].append(rmse)
         
     if PLOT:
-        create_plots("PNN", "avazu", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
-        create_plots("PNN", "avazu", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
-        create_plots("PNN", "avazu", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
+        create_plots("FNN", "avazu", results_activation_function, "Activation Function", "activation_func", dnn_activation_list)
+        create_plots("FNN", "avazu", results_dropout, "Dropout Rate", "dropout", dnn_dropout_list)
+        create_plots("FNN", "avazu", results_number_of_neurons, "Number of Neurons per layer", "nr_neurons", dnn_hidden_units_list)
 
 
 def test_DFM_avazu(data,train,test):
@@ -634,13 +642,13 @@ if __name__ == "__main__":
     data_criteo, train_criteo, test_criteo = process_criteo()
     data_avazu, train_avazu, test_avazu = process_avazu()
 
-    # test_FNN_criteo(data_criteo,train_criteo,test_criteo)
-    # test_FNN_avazu(data_avazu,train_avazu,test_avazu)
+    test_FNN_criteo(data_criteo,train_criteo,test_criteo)
+    test_FNN_avazu(data_avazu,train_avazu,test_avazu)
     
     # test_PNN_criteo(data_criteo, train_criteo, test_criteo)
     # test_PNN_avazu(data_avazu,train_avazu,test_avazu)
     
-    test_DFM_criteo(data_criteo, train_criteo, test_criteo)
-    test_DFM_avazu(data_avazu,train_avazu,test_avazu)
+    # test_DFM_criteo(data_criteo, train_criteo, test_criteo)
+    # test_DFM_avazu(data_avazu,train_avazu,test_avazu)
         
     print("Program ended in {time} seconds.".format(time = round(time.time() - start_time, 2)))
